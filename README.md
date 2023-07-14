@@ -41,7 +41,8 @@ This query creates a table named `slots` with columns for `id`, `slot_number`, `
 
 4. Build and run the project using Cargo.
 
-5. The Beacon Chain Indexer will start processing slots. You can access the calculated participation rate by making a GET request to the `/network/participation_rate` endpoint.
+5. The Beacon Chain Indexer will start processing slots. You can access the calculated participation rate by making a GET request to the `/network/participation_rate` endpoint. (curl http://127.0.0.1:8000/network/participation_rate
+)
 
 ## Project Structure
 
