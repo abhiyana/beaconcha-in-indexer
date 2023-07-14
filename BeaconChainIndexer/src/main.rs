@@ -25,27 +25,24 @@ async fn main() -> std::io::Result<()> {
     let indexer = Arc::new(Indexer::new(database.clone()));
 
     // Spawn a separate task to run the process_slots method periodically
-    tokio::task::spawn_blocking(move || {
-        actix_rt::System::new().block_on(async move {
-            loop {
-                // Acquire the lock to access the database
-                if let Ok(mut database) = database.try_lock() {
-                    Indexer::process_slots(&mut database).await.unwrap_or_else(|err| {
-                        eprintln!("Error in process_slot: {}", err);
-                    });
-                }
+    actix_rt::spawn(async move {
+        loop {
+            Indexer::process_slots(database.clone()).await.unwrap_or_else(|err| {
+                eprintln!("Error in process_slot: {}", err);
+            });
 
-                // Sleep for the desired interval (Average time of adding new slot is 12 sec)
-                sleep(Duration::from_secs(10)).await;
-            }
-        })
+            // Sleep for the desired interval (Average time of adding new slot is 12 sec)
+            sleep(Duration::from_secs(10)).await;
+        }
     });
+
+
 
     // Start the Actix Web server
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .app_data(web::Data::new(indexer.clone()))
+            .app_data(web::Data::new(indexer.clone())) // Share the Indexer instance across multiple threads
             .route("/network/participation_rate", web::get().to(handlers::get_network_participation_rate))
     })
     .bind("127.0.0.1:8000")?
