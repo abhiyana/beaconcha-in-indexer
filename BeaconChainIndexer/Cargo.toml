@@ -1,0 +1,24 @@
+[package]
+name = "BeaconChainIndexer"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0.165", features = ["derive"] }
+reqwest = "0.11"
+tokio = { version = "1", features = ["full"] }
+serde_json = "1.0"
+tokio-postgres = "0.7.7"
+actix-web = "4.3.0"
+actix-rt = "2.3.0"
+anyhow = "1.0"
+num-bigint = "0.4.1"
+num-traits = "0.2"
+env_logger = "0.10.0"
+log = "0.4"
+bigdecimal = "0.4.0"
+pgnumeric = "0.2.0"
+
+
