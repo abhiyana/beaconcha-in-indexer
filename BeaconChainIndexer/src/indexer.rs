@@ -18,19 +18,17 @@ impl Indexer {
         Indexer { database }
     }
 
-    pub async fn process_slots(db: Arc<Mutex<PostgresDatabase>>) -> Result<(), Box<dyn Error>> {
-        let mut database = db.lock().unwrap(); // Acquire the lock to access the database
-
+    pub async fn process_slots(database: &mut PostgresDatabase) -> Result<(), Box<dyn Error>> {
         // Fetch the latest slot number from the database
         let latest_slot: i64 = database.get_latest_slot().await?;
-
+    
         // Build the URL for the latest slot data
         let latest_slot_url = format!("https://beaconcha.in/api/v1/slot/latest");
-
+    
         // Make the API call to get the latest slot data
         let latest_slot_data = Self::make_api_call(&latest_slot_url).await?;
         let latest_slot_number: i64 = latest_slot_data["data"]["slot"].as_i64().unwrap();
-
+    
         // Check if there are new slots available
         if latest_slot_number > latest_slot {
             // Determine the starting slot number based on the existing slots in the database
@@ -39,28 +37,28 @@ impl Indexer {
             } else {
                 latest_slot + 1
             };
-
+    
             // Process slots from the starting slot to the latest slot obtained from the API
             for slot_number in start_slot..=latest_slot_number {
                 let slot_url = format!(
                     "https://beaconcha.in/api/v1/slot/{}/attestations",
                     slot_number
                 );
-
+    
                 // Make the API call to get the slot data
                 match Self::make_api_call(&slot_url).await {
                     Ok(json_data) => {
                         let attestation_response: AttestationResponse =
                             serde_json::from_value(json_data)?;
-
+    
                         // Access the data field of the response struct
                         let data = attestation_response.data;
-
+    
                         // Initialize variables to store aggregated data
                         let mut missed_attestations: i64 = 0;
                         let mut validator_set_size: i64 = 0;
                         let mut epoch: i64 = 0;
-
+    
                         // Process each attestation of committee in the data
                         for attestation in data {
                             let committee_size = attestation.validators.len() as i64;
@@ -71,7 +69,7 @@ impl Indexer {
                                 epoch = attestation.target_epoch as i64;
                             }
                         }
-
+    
                         // Store the slot data in the database
                         let slot = Slot {
                             slot_number: slot_number as i64,
@@ -79,21 +77,22 @@ impl Indexer {
                             missed_attestations,
                             epoch,
                         };
-
+    
                         database.store_slot(slot).await?;
                     }
                     Err(err) => {
                         println!("Error: {}", err);
                     }
                 }
-
+    
                 // Sleep for a short duration to avoid rate limiting
                 sleep(Duration::from_millis(100)).await;
             }
         }
-
+    
         Ok(())
     }
+    
 
     fn calculate_missed_attestations(
         aggregationbits: &str,
