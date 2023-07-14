@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS slots (
     missed_attestation BIGINT NOT NULL,
     created_at         TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
-
+```
 This query creates a table named `slots` with columns for `id`, `slot_number`, `validator_set_size`, `epoch`, `missed_attestation`, and `created_at`.
 
 ## Getting Started
