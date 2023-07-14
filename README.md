@@ -41,7 +41,7 @@ This query creates a table named `slots` with columns for `id`, `slot_number`, `
 
 4. Build and run the project using Cargo.
 
-5. The Beacon Chain Indexer will start processing slots and calculating the participation rate based on the last five epochs. You can access the calculated participation rate by making a GET request to the `/network/participation_rate` endpoint.
+5. The Beacon Chain Indexer will start processing slots. You can access the calculated participation rate by making a GET request to the `/network/participation_rate` endpoint.
 
 ## Project Structure
 
@@ -51,7 +51,7 @@ The project follows the following directory structure:
 - `database/`: Contains the code for interacting with the PostgreSQL database.
 - `indexer/`: Contains the code for processing slots and calculating the participation rate.
 - `models/`: Contains the data models used in the project.
--  main/ : Contains the code for running HttpServer and process slot scheduler
+-  main/ : Contains the code for running HttpServer and processing slot scheduler
 
 ## Dependencies
 
@@ -66,11 +66,11 @@ For a complete list of dependencies and their versions, refer to the `Cargo.toml
 
 ## Future Enhancements
 
-The Beacon Chain Indexer project provides a solid foundation for calculating the participation rate of the entire network based on the last five epochs. However, there are several potential areas for future enhancement and additional functionality.Individual Validator Participation Rate: Extend the indexer to calculate and track the participation rate of individual validators within the network.
+The Beacon Chain Indexer project provides functionality for calculating the participation rate of the entire network based on the last five epochs. However, there are several potential areas for future enhancement and additional functionality, It can be extend to calculate the Individual Validator Participation Rate.
 
 ## Contributing
 
-Contributions to the Beacon Chain Indexer project are welcome! If you find any issues or have suggestions for improvements.
+Contributions to the Beacon Chain Indexer are welcome! If you find any issues or have suggestions for improvements.
 
 
 
